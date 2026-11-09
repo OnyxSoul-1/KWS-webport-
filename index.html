@@ -5,18 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>KWS - Ported by Onyx$oul-1</title>
     <link rel="stylesheet" href="TemplateData/style.css">
+    <style>
+        .credit {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 9999;
+            pointer-events: none;
+            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8f00ff, #ff0000);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbow 3s linear infinite;
+        }
+        @keyframes rainbow { to { background-position: 200% center; } }
+    </style>
     
+    <!-- THE HEADER FIX -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js');
         }
     </script>
 
+    <!-- THE MERGER -->
     <script>
         const originalFetch = window.fetch;
         window.fetch = async function(url, options) {
             const urlStr = url.toString();
-            
             async function mergeParts(baseName) {
                 let parts = [];
                 for (let i = 1; i <= 2; i++) {
@@ -32,21 +51,18 @@
                 }
                 return merged;
             }
-
             if (urlStr.includes('Webgl.data.gz')) {
                 try {
                     const merged = await mergeParts('Webgl.data.gz');
                     return new Response(merged, { status: 200 });
                 } catch (e) { return originalFetch(url, options); }
             }
-            
             if (urlStr.includes('Webgl.wasm.gz')) {
                 try {
                     const merged = await mergeParts('Webgl.wasm.gz');
                     return new Response(merged, { status: 200, headers: new Headers({ 'Content-Type': 'application/wasm' }) });
                 } catch (e) { return originalFetch(url, options); }
             }
-            
             return originalFetch(url, options);
         };
     </script>
@@ -60,6 +76,8 @@
         </div>
         <div id="unity-warning"></div>
     </div>
+
+    <div class="credit">Ported by Onyx$oul-1</div>
 
     <script>
         var container = document.querySelector("#unity-container");
@@ -75,7 +93,6 @@
 
         var buildUrl = "Build";
         var loaderUrl = buildUrl + "/Webgl.loader.js";
-        
         var config = {
             dataUrl: buildUrl + "/Webgl.data.gz",
             frameworkUrl: buildUrl + "/Webgl.framework.js.gz",
@@ -96,7 +113,6 @@
         }
 
         loadingBar.style.display = "block";
-
         var script = document.createElement("script");
         script.src = loaderUrl;
         script.onload = () => {
@@ -104,11 +120,8 @@
                 progressBarFull.style.width = 100 * progress + "%";
             }).then((unityInstance) => {
                 loadingBar.style.display = "none";
-            }).catch((message) => {
-                alert(message);
-            });
+            }).catch((message) => { alert(message); });
         };
-
         document.body.appendChild(script);
     </script>
 </body>
