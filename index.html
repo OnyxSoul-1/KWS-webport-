@@ -9,19 +9,30 @@
         .credit { position: absolute; bottom: 15px; right: 15px; color: rgba(255,255,255,0.4); font-family: monospace; font-size: 14px; font-weight: bold; z-index: 9999; pointer-events: none; }
     </style>
 
-    <!-- THE MERGER SCRIPT -->
+    <!-- THE MERGER SCRIPT WITH FAKE HEADERS -->
     <script>
-        // POINTS TO YOUR KWS REPO ON GITHACK
         const CDN_URL = "https://raw.githack.com/OnyxSoul-1/KWS-webport-/main/Build/";
         
         const originalFetch = window.fetch;
         window.fetch = async function(url, options) {
             const urlStr = url.toString();
             
+            // FAKE HEADERS TO BYPASS CORS/PERMISSIONS
+            const fakeHeaders = {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                'Permissions-Policy': 'interest-cohort=()',
+                'Cross-Origin-Resource-Policy': 'cross-origin'
+            };
+
             async function fetchAndMerge(basePath, numParts) {
                 let parts = [];
                 for (let i = 1; i <= numParts; i++) {
-                    let res = await originalFetch(`${basePath}.part${i}`);
+                    // Inject fake headers into the request
+                    let res = await originalFetch(`${basePath}.part${i}`, {
+                        mode: 'cors',
+                        headers: fakeHeaders
+                    });
                     if (!res.ok) throw new Error(`Missing part ${i} for ${basePath}`);
                     parts.push(await res.arrayBuffer());
                 }
@@ -39,7 +50,7 @@
             if (urlStr.includes('Webgl%20v0012.data.gz') || urlStr.includes('Webgl v0012.data.gz')) {
                 try {
                     const merged = await fetchAndMerge(CDN_URL + 'Webgl%20v0012.data.gz', 2);
-                    return new Response(merged, { status: 200 });
+                    return new Response(merged, { status: 200, headers: new Headers(fakeHeaders) });
                 } catch (e) { console.error(e); return originalFetch(url, options); }
             }
             
@@ -47,7 +58,7 @@
             if (urlStr.includes('Webgl%20v0012.wasm.gz') || urlStr.includes('Webgl v0012.wasm.gz')) {
                 try {
                     const merged = await fetchAndMerge(CDN_URL + 'Webgl%20v0012.wasm.gz', 2);
-                    return new Response(merged, { status: 200, headers: new Headers({ 'Content-Type': 'application/wasm' }) });
+                    return new Response(merged, { status: 200, headers: new Headers({ ...fakeHeaders, 'Content-Type': 'application/wasm' }) });
                 } catch (e) { console.error(e); return originalFetch(url, options); }
             }
             
