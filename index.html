@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>KeyboardWarriorStickman - Ported by Onyx$oul-1</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
@@ -10,13 +11,14 @@
         .credit { position: absolute; bottom: 15px; right: 15px; color: rgba(255,255,255,0.4); font-family: monospace; font-size: 14px; font-weight: bold; z-index: 9999; pointer-events: none; }
     </style>
     
-    <!-- MERGER SCRIPT FOR SPLIT FILES -->
+    <!-- CDN MERGER SCRIPT -->
     <script>
+        const CDN_URL = "https://raw.githack.com/OnyxSoul-1/KWS-webport-/main/Build/";
+        
         const originalFetch = window.fetch;
         window.fetch = async function(url, options) {
             const urlStr = url.toString();
             
-            // Helper to merge parts
             async function fetchAndMerge(basePath, numParts) {
                 let parts = [];
                 for (let i = 1; i <= numParts; i++) {
@@ -34,18 +36,18 @@
                 return merged;
             }
 
-            // Intercept Data file (2 parts)
-            if (urlStr.includes('Webgl%20v0012.data.gz') || urlStr.includes('Webgl v0012.data.gz')) {
+            // Merge Data (2 parts) - Using %20 encoded names
+            if (urlStr.includes('Webgl%20v0012.data.gz')) {
                 try {
-                    const merged = await fetchAndMerge('./Build/Webgl%20v0012.data.gz', 2);
+                    const merged = await fetchAndMerge(CDN_URL + 'Webgl%20v0012.data.gz', 2);
                     return new Response(merged, { status: 200 });
                 } catch (e) { console.error(e); return originalFetch(url, options); }
             }
             
-            // Intercept WASM file (2 parts)
-            if (urlStr.includes('Webgl%20v0012.wasm.gz') || urlStr.includes('Webgl v0012.wasm.gz')) {
+            // Merge WASM (2 parts) - Using %20 encoded names
+            if (urlStr.includes('Webgl%20v0012.wasm.gz')) {
                 try {
-                    const merged = await fetchAndMerge('./Build/Webgl%20v0012.wasm.gz', 2);
+                    const merged = await fetchAndMerge(CDN_URL + 'Webgl%20v0012.wasm.gz', 2);
                     return new Response(merged, { status: 200, headers: new Headers({ 'Content-Type': 'application/wasm' }) });
                 } catch (e) { console.error(e); return originalFetch(url, options); }
             }
@@ -71,7 +73,6 @@
         </div>
     </div>
 
-    <!-- YOUR NAME -->
     <div class="credit">Ported by Onyx$oul-1</div>
 
     <script>
@@ -100,15 +101,16 @@
             updateBannerVisibility();
         }
 
-        var buildUrl = "Build";
-        var loaderUrl = buildUrl + "/Webgl%20v0012.loader.js";
+        var buildUrl = CDN_URL;
         
-        // Pointing to the original names so the merger script can catch them
+        // --- FIXED LOADER URL WITH %20 ---
+        var loaderUrl = buildUrl + "Webgl%20v0012.loader.js";
+        
         var config = {
-            dataUrl: buildUrl + "/Webgl v0012.data.gz",
-            frameworkUrl: buildUrl + "/Webgl%20v0012.framework.js.gz",
-            codeUrl: buildUrl + "/Webgl v0012.wasm.gz",
-            streamingAssetsUrl: "StreamingAssets",
+            dataUrl: buildUrl + "Webgl%20v0012.data.gz",
+            frameworkUrl: buildUrl + "Webgl%20v0012.framework.js.gz",
+            codeUrl: buildUrl + "Webgl%20v0012.wasm.gz",
+            streamingAssetsUrl: CDN_URL + "StreamingAssets",
             companyName: "GoodKnightCollective",
             productName: "KeyboardWarriorStickman",
             productVersion: "0.001",
