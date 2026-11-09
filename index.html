@@ -6,14 +6,12 @@
     <title>KWS - Ported by Onyx$oul-1</title>
     <link rel="stylesheet" href="TemplateData/style.css">
     
-    <!-- THIS TURNS ON THE HEADER TRICK -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js');
         }
     </script>
 
-    <!-- THIS MERGES THE SPLIT FILES FROM YOUR OWN GITHUB FOLDER -->
     <script>
         const originalFetch = window.fetch;
         window.fetch = async function(url, options) {
@@ -22,7 +20,7 @@
             async function mergeParts(baseName) {
                 let parts = [];
                 for (let i = 1; i <= 2; i++) {
-                    let res = await originalFetch(`./Build/${baseName}.gz.part${i}`);
+                    let res = await originalFetch(`./Build/${baseName}.part${i}`);
                     if (!res.ok) throw new Error("Missing part " + i);
                     parts.push(await res.arrayBuffer());
                 }
@@ -35,16 +33,16 @@
                 return merged;
             }
 
-            if (urlStr.includes('Webgl%20v0012.data.gz')) {
+            if (urlStr.includes('Webgl.data.gz')) {
                 try {
-                    const merged = await mergeParts('Webgl%20v0012.data');
+                    const merged = await mergeParts('Webgl.data.gz');
                     return new Response(merged, { status: 200 });
                 } catch (e) { return originalFetch(url, options); }
             }
             
-            if (urlStr.includes('Webgl%20v0012.wasm.gz')) {
+            if (urlStr.includes('Webgl.wasm.gz')) {
                 try {
-                    const merged = await mergeParts('Webgl%20v0012.wasm');
+                    const merged = await mergeParts('Webgl.wasm.gz');
                     return new Response(merged, { status: 200, headers: new Headers({ 'Content-Type': 'application/wasm' }) });
                 } catch (e) { return originalFetch(url, options); }
             }
@@ -75,14 +73,13 @@
             warningBanner.innerHTML = msg;
         }
 
-        // Pointing to YOUR github folder, not the CDN
         var buildUrl = "Build";
-        var loaderUrl = buildUrl + "/Webgl%20v0012.loader.js";
+        var loaderUrl = buildUrl + "/Webgl.loader.js";
         
         var config = {
-            dataUrl: buildUrl + "/Webgl%20v0012.data.gz",
-            frameworkUrl: buildUrl + "/Webgl%20v0012.framework.js.gz",
-            codeUrl: buildUrl + "/Webgl%20v0012.wasm.gz",
+            dataUrl: buildUrl + "/Webgl.data.gz",
+            frameworkUrl: buildUrl + "/Webgl.framework.js.gz",
+            codeUrl: buildUrl + "/Webgl.wasm.gz",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "GoodKnightCollective",
             productName: "KeyboardWarriorStickman",
