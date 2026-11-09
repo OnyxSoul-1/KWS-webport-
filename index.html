@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>KeyboardWarriorStickman - Ported by Onyx$oul-1</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <!-- Removed favicon link here -->
     <link rel="stylesheet" href="TemplateData/style.css">
     <style>
         .credit { position: absolute; bottom: 15px; right: 15px; color: rgba(255,255,255,0.4); font-family: monospace; font-size: 14px; font-weight: bold; z-index: 9999; pointer-events: none; }
@@ -36,7 +36,6 @@
                 return merged;
             }
 
-            // Merge Data (2 parts) - Using %20 encoded names
             if (urlStr.includes('Webgl%20v0012.data.gz')) {
                 try {
                     const merged = await fetchAndMerge(CDN_URL + 'Webgl%20v0012.data.gz', 2);
@@ -44,7 +43,6 @@
                 } catch (e) { console.error(e); return originalFetch(url, options); }
             }
             
-            // Merge WASM (2 parts) - Using %20 encoded names
             if (urlStr.includes('Webgl%20v0012.wasm.gz')) {
                 try {
                     const merged = await fetchAndMerge(CDN_URL + 'Webgl%20v0012.wasm.gz', 2);
@@ -102,8 +100,6 @@
         }
 
         var buildUrl = CDN_URL;
-        
-        // --- FIXED LOADER URL WITH %20 ---
         var loaderUrl = buildUrl + "Webgl%20v0012.loader.js";
         
         var config = {
